@@ -1,0 +1,3 @@
+interface IMainPageState {
+    previewImage?: string
+}
