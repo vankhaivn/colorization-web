@@ -1,0 +1,1 @@
+interface IThemeSwitcherCompProps extends BaseCompProps {}

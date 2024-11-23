@@ -1,9 +1,12 @@
 import type { Metadata } from "next"
 
+import { baiJamjuree } from "@/styles/fonts"
 import { AppProvider } from "@/providers/app"
 
+import { AppHeader } from "@/components/layouts"
+import { Toaster } from "@/components/ui/sonner"
+
 import "../styles/globals.css"
-import { baiJamjuree } from "@/styles/fonts"
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -18,7 +21,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${baiJamjuree.className}  antialiased`}>
-                <AppProvider>{children}</AppProvider>
+                <AppProvider>
+                    <div className="w-100 h-100 px-24">
+                        <AppHeader />
+                        {children}
+                    </div>
+                    <Toaster />
+                </AppProvider>
             </body>
         </html>
     )

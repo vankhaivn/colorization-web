@@ -1,0 +1,3 @@
+interface BaseCompProps {
+    className?: string
+}
