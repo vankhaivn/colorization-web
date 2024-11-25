@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 
-import { apiHelper } from "@/utils/helpers"
+import { apiHelper, timeHelper } from "@/utils/helpers"
 
 export default function Page() {
     const [state, setState] = useState<IMainPageState>({
@@ -41,31 +41,24 @@ export default function Page() {
     }
 
     const handleColorize = async () => {
-        handleOnChange("loading", true)
-        handleOnChange("progress", 1)
-
-        const apiPromise = file ? apiHelper.colorize(file) : null
-
-        for (let i = 2; i <= 100; i++) {
-            await new Promise((resolve) => setTimeout(resolve, 30))
-            handleOnChange("progress", i)
-
-            if (i === 100 && apiPromise) {
-                break
-            }
+        if (!file) {
+            toast.error("Please provide an image!")
+            return
         }
 
+        handleOnChange("loading", true)
+        handleOnChange("progress", 0)
+
         try {
-            if (apiPromise) {
-                const res = await apiPromise
-                if (res.data) {
-                    previewOutputImage && URL.revokeObjectURL(previewOutputImage)
-                    const outputBlob = new Blob([res.data], { type: "image/png" })
-                    handleOnChange("outputBlob", outputBlob)
-                    handleOnChange("previewOutputImage", URL.createObjectURL(res.data))
-                }
-            } else {
-                toast.error("Please provide an image!")
+            const res = await apiHelper.colorize(file, (progress: number) => {
+                handleOnChange("progress", progress)
+            })
+            if (res.data) {
+                previewOutputImage && URL.revokeObjectURL(previewOutputImage)
+
+                const outputBlob = new Blob([res.data], { type: "image/png" })
+                handleOnChange("outputBlob", outputBlob)
+                handleOnChange("previewOutputImage", URL.createObjectURL(outputBlob))
             }
         } catch (err) {
             if (err instanceof Error) {
@@ -74,6 +67,8 @@ export default function Page() {
         }
 
         handleOnChange("progress", 100)
+        await timeHelper.delay(500)
+        handleOnChange("progress", 0)
         handleOnChange("loading", false)
     }
 
@@ -90,7 +85,7 @@ export default function Page() {
     }
 
     return (
-        <div className="flex flex-row w-full h-[90vh] justify-between items-center py-8">
+        <div className="flex flex-row w-full h-[90vh] justify-between items-center py-8 relative">
             <div className="w-[40%] shadow-lg">
                 <Label htmlFor="input-image">
                     <ImageWrapper className="w-full h-full">
@@ -114,7 +109,6 @@ export default function Page() {
                     <WandSparkles />
                     Paint It
                 </Button>
-                {progress > 0 && <Progress value={progress} className="" />}
             </div>
             <div className="w-[40%] shadow-lg relative">
                 <ImageWrapper className="w-full h-full">
@@ -124,7 +118,7 @@ export default function Page() {
                     </ImageFallback>
                 </ImageWrapper>
                 <Button
-                    className="absolute left-[50%] translate-x-[-50%] top-[102%]"
+                    className="absolute left-[50%] translate-x-[-50%] -top-12"
                     size={"icon"}
                     variant={"outline"}
                     onClick={handleDownload}
@@ -132,6 +126,7 @@ export default function Page() {
                     <Download />
                 </Button>
             </div>
+            {progress > 0 && <Progress value={progress} className="absolute bottom-12" />}
         </div>
     )
 }
