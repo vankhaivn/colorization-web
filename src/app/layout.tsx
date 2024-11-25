@@ -21,7 +21,7 @@ export default function RootLayout({
         <html lang="en" className={baiJamjuree.className}>
             <body className="antialiased overflow-hidden">
                 <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-                    <div className="w-full h-[100vh] px-[12%] bg-background">
+                    <div className="w-full h-[100vh] px-[12%] grid-bg">
                         <AppHeader />
                         {children}
                     </div>

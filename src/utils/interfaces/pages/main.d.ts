@@ -4,4 +4,5 @@ interface IMainPageState {
     progress: number
     file: File | null
     loading: boolean
+    outputBlob: Blob | null
 }

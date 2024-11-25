@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { Switch } from "@/components/ui/switch"
 
 import { enums } from "@/utils/constants"
+import { Moon, SunMoon } from "lucide-react"
 
 export function ThemeSwitcher({ className }: IThemeSwitcherCompProps) {
     const { setTheme, theme } = useTheme()
@@ -20,8 +21,13 @@ export function ThemeSwitcher({ className }: IThemeSwitcherCompProps) {
 
     return (
         <div className={`${className} flex flex-row justify-between items-center`}>
-            <p className="mr-2">Dark mode</p>
-            <Switch id="theme-switcher" onClick={handleSwitchTheme} checked={theme === enums.THEME.DARK} />
+            {theme === enums.THEME.LIGHT ? <Moon /> : <SunMoon />}
+            <Switch
+                id="theme-switcher"
+                onClick={handleSwitchTheme}
+                checked={theme === enums.THEME.DARK}
+                className="ml-2"
+            />
         </div>
     )
 }

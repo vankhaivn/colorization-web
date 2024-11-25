@@ -16,13 +16,14 @@ export default function Page() {
     const [state, setState] = useState<IMainPageState>({
         previewInputImage: "",
         previewOutputImage: "",
+        outputBlob: null,
         progress: 0,
         file: null,
         loading: false,
     })
-    const { previewInputImage, previewOutputImage, progress, file, loading } = state
+    const { previewInputImage, previewOutputImage, outputBlob, progress, file, loading } = state
 
-    const handleOnChange = (field: string, value: string | number | File | boolean | null) => {
+    const handleOnChange = (field: string, value: string | number | File | boolean | Blob | null) => {
         setState((prevState) => ({
             ...prevState,
             [field]: value,
@@ -59,6 +60,8 @@ export default function Page() {
                 const res = await apiPromise
                 if (res.data) {
                     previewOutputImage && URL.revokeObjectURL(previewOutputImage)
+                    const outputBlob = new Blob([res.data], { type: "image/png" })
+                    handleOnChange("outputBlob", outputBlob)
                     handleOnChange("previewOutputImage", URL.createObjectURL(res.data))
                 }
             } else {
@@ -72,6 +75,18 @@ export default function Page() {
 
         handleOnChange("progress", 100)
         handleOnChange("loading", false)
+    }
+
+    const handleDownload = () => {
+        if (outputBlob) {
+            const link = document.createElement("a")
+            link.href = URL.createObjectURL(outputBlob)
+            link.download = "colorized-image.png"
+            link.click()
+            URL.revokeObjectURL(link.href)
+        } else {
+            toast.error("No image available to download!")
+        }
     }
 
     return (
@@ -108,7 +123,12 @@ export default function Page() {
                         Click to upload your image
                     </ImageFallback>
                 </ImageWrapper>
-                <Button className="absolute left-[50%] translate-x-[-50%] top-[102%]" size={"icon"} variant={"outline"}>
+                <Button
+                    className="absolute left-[50%] translate-x-[-50%] top-[102%]"
+                    size={"icon"}
+                    variant={"outline"}
+                    onClick={handleDownload}
+                >
                     <Download />
                 </Button>
             </div>

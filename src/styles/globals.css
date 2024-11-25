@@ -7,7 +7,7 @@ body {
 }
 
 @layer base {
-  :root {
+    :root {
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;
@@ -33,8 +33,11 @@ body {
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
+
+        --grid-color: rgba(0, 0, 0, 0.04);
+        --grid-line-height: 4;
     }
-  .dark {
+    .dark {
         --background: 0 0% 3.9%;
         --foreground: 0 0% 98%;
         --card: 0 0% 3.9%;
@@ -59,14 +62,38 @@ body {
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
+
+        --grid-color: rgba(255, 255, 255, 0.05);
+        --grid-line-height: 4;
     }
 }
 
 @layer base {
-  * {
-    @apply border-border;
+    * {
+        @apply border-border;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
+    }
+    .grid-bg {
+        @apply bg-background;
+        background-image: linear-gradient(
+                0deg,
+                transparent 49%,
+                var(--grid-color) 50%,
+                var(--grid-color) 51%,
+                transparent 52%,
+                transparent
+            ),
+            linear-gradient(
+                90deg,
+                transparent 49%,
+                var(--grid-color) 50%,
+                var(--grid-color) 51%,
+                transparent 52%,
+                transparent
+            );
+        background-position: 0.5em 0.5em;
+        background-size: calc(var(--grid-line-height) * 1em) calc(var(--grid-line-height) * 1em);
     }
 }
