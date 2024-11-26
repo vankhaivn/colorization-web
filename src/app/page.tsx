@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from "react"
 import { Download, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
 
-import { Image, ImageFallback, ImageWrapper } from "@/components/common"
+import { Image, ImageFallback, ImageWrapper, TaskSelector } from "@/components/common"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,12 @@ export default function Page() {
         previewInputImage: "",
         previewOutputImage: "",
         outputBlob: null,
+        task: "",
         progress: 0,
         file: null,
         loading: false,
     })
-    const { previewInputImage, previewOutputImage, outputBlob, progress, file, loading } = state
+    const { previewInputImage, previewOutputImage, outputBlob, task, progress, file, loading } = state
 
     const handleOnChange = (field: string, value: string | number | File | boolean | Blob | null) => {
         setState((prevState) => ({
@@ -41,6 +42,11 @@ export default function Page() {
     }
 
     const handleColorize = async () => {
+        if (!task) {
+            toast.error("Please provide a task!")
+            return
+        }
+
         if (!file) {
             toast.error("Please provide an image!")
             return
@@ -90,7 +96,7 @@ export default function Page() {
                 <Label htmlFor="input-image">
                     <ImageWrapper className="w-full h-full">
                         <Image src={previewInputImage} alt="@image" />
-                        <ImageFallback className="min-h-[62vh] font-semibold text-lg">
+                        <ImageFallback className="min-h-[62vh] font-semibold text-sm md:text-base lg:text-xl">
                             Click to upload your image
                         </ImageFallback>
                     </ImageWrapper>
@@ -104,10 +110,11 @@ export default function Page() {
                     className="w-0 h-0 hidden"
                 />
             </div>
-            <div className="w-[16%] flex flex-col items-center gap-y-2">
-                <Button variant={"secondary"} className="w-[56%]" onClick={handleColorize} disabled={loading}>
+            <div className="w-[20%] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
+                <TaskSelector className="mb-4" onChange={(value) => handleOnChange("task", value)} />
+                <Button variant={"secondary"} className="w-full" onClick={handleColorize} disabled={loading}>
                     <WandSparkles />
-                    Paint It
+                    Make Magic!
                 </Button>
             </div>
             <div className="w-[40%] shadow-lg relative">

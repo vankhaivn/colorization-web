@@ -1,3 +1,3 @@
-interface BaseCompProps {
+interface IBaseCompProps {
     className?: string
 }

@@ -1,4 +1,5 @@
-import { ThemeSwitcher } from "./theme-switcher"
 import { ImageWrapper, Image, ImageFallback } from "./image"
+import { ThemeSwitcher } from "./theme-switcher"
+import { TaskSelector } from "./task-selector"
 
-export { ThemeSwitcher, ImageWrapper, Image, ImageFallback }
+export { ImageWrapper, Image, ImageFallback, TaskSelector, ThemeSwitcher }
