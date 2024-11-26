@@ -8,10 +8,10 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui"
 import { enums } from "@/utils/constants"
 
-export const TaskSelector = (props: ITaskSelectorCompProps) => {
+export const ModeSelector = (props: IModeSelectorCompProps) => {
     const { className, onChange } = props
 
     const handleOnChange = (value: string) => {
@@ -23,13 +23,13 @@ export const TaskSelector = (props: ITaskSelectorCompProps) => {
     return (
         <Select onValueChange={handleOnChange}>
             <SelectTrigger className={`w-full ${className}`}>
-                <SelectValue placeholder="Select a task" />
+                <SelectValue placeholder="Select colorize mode" />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
                     <SelectLabel>Task</SelectLabel>
-                    <SelectItem value={enums.TASK.COLORIZATION}>Colorization</SelectItem>
-                    <SelectItem value={enums.TASK.MOTION_DEBLUR}>Motion Deblur</SelectItem>
+                    <SelectItem value={enums.MODE.DEFAULT}>Default</SelectItem>
+                    <SelectItem value={enums.MODE.WITH_GAN}>With GAN</SelectItem>
                 </SelectGroup>
             </SelectContent>
         </Select>

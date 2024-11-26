@@ -4,25 +4,23 @@ import { ChangeEvent, useState } from "react"
 import { Download, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
 
-import { Image, ImageFallback, ImageWrapper, TaskSelector } from "@/components/common"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+import { Image, ImageFallback, ImageWrapper, ModeSelector } from "@/components/common"
+import { Input, Label, Button, Progress } from "@/components/ui"
 
 import { apiHelper, timeHelper } from "@/utils/helpers"
+import { enums } from "@/utils/constants"
 
 export default function Page() {
     const [state, setState] = useState<IMainPageState>({
         previewInputImage: "",
         previewOutputImage: "",
         outputBlob: null,
-        task: "",
-        progress: 0,
+        mode: "",
+        progress: 60,
         file: null,
         loading: false,
     })
-    const { previewInputImage, previewOutputImage, outputBlob, task, progress, file, loading } = state
+    const { previewInputImage, previewOutputImage, outputBlob, mode, progress, file, loading } = state
 
     const handleOnChange = (field: string, value: string | number | File | boolean | Blob | null) => {
         setState((prevState) => ({
@@ -42,8 +40,8 @@ export default function Page() {
     }
 
     const handleColorize = async () => {
-        if (!task) {
-            toast.error("Please provide a task!")
+        if (!mode) {
+            toast.error("Please provide a mode!")
             return
         }
 
@@ -56,15 +54,28 @@ export default function Page() {
         handleOnChange("progress", 0)
 
         try {
-            const res = await apiHelper.colorize(file, (progress: number) => {
-                handleOnChange("progress", progress)
-            })
+            let res
+            if (mode === enums.MODE.DEFAULT) {
+                res = await apiHelper.colorizeDefault(file, (progress: number) => {
+                    handleOnChange("progress", progress)
+                })
+            } else if (mode === enums.MODE.WITH_GAN) {
+                res = await apiHelper.colorizeWithGan(file, (progress: number) => {
+                    handleOnChange("progress", progress)
+                })
+            } else {
+                toast.error("Invalid mode selected!")
+                handleOnChange("loading", false)
+                return
+            }
+
             if (res.data) {
                 previewOutputImage && URL.revokeObjectURL(previewOutputImage)
 
                 const outputBlob = new Blob([res.data], { type: "image/png" })
                 handleOnChange("outputBlob", outputBlob)
                 handleOnChange("previewOutputImage", URL.createObjectURL(outputBlob))
+                toast.success("Task completed successfully!")
             }
         } catch (err) {
             if (err instanceof Error) {
@@ -92,9 +103,9 @@ export default function Page() {
 
     return (
         <div className="flex flex-row w-full h-[90vh] justify-between items-center py-8 relative">
-            <div className="w-[40%] shadow-lg">
+            <div className="w-[36%] shadow-lg">
                 <Label htmlFor="input-image">
-                    <ImageWrapper className="w-full h-full">
+                    <ImageWrapper className="w-full h-full max-h-[80vh]">
                         <Image src={previewInputImage} alt="@image" />
                         <ImageFallback className="min-h-[62vh] font-semibold text-sm md:text-base lg:text-xl">
                             Click to upload your image
@@ -110,15 +121,16 @@ export default function Page() {
                     className="w-0 h-0 hidden"
                 />
             </div>
-            <div className="w-[20%] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
-                <TaskSelector className="mb-4" onChange={(value) => handleOnChange("task", value)} />
+            <div className="relative w-[28%] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
+                <ModeSelector className="mb-4" onChange={(value) => handleOnChange("mode", value)} />
                 <Button variant={"secondary"} className="w-full" onClick={handleColorize} disabled={loading}>
                     <WandSparkles />
                     Make Magic!
                 </Button>
+                {progress > 0 && <Progress value={progress} className="w-[82%] absolute -bottom-8" />}
             </div>
-            <div className="w-[40%] shadow-lg relative">
-                <ImageWrapper className="w-full h-full">
+            <div className="w-[36%] shadow-lg relative">
+                <ImageWrapper className="w-full h-full max-h-[80vh]">
                     <Image src={previewOutputImage} alt="@image" />
                     <ImageFallback className="min-h-[62vh] font-semibold text-lg">
                         Click to upload your image
@@ -133,7 +145,6 @@ export default function Page() {
                     <Download />
                 </Button>
             </div>
-            {progress > 0 && <Progress value={progress} className="absolute bottom-12" />}
         </div>
     )
 }

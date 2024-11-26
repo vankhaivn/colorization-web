@@ -1,7 +1,7 @@
 import { useTheme } from "next-themes"
 import { toast } from "sonner"
 
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui"
 
 import { enums } from "@/utils/constants"
 import { Moon, SunMoon } from "lucide-react"

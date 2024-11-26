@@ -3,7 +3,7 @@ export const enum THEME {
     DARK = "dark",
 }
 
-export const enum TASK {
-    COLORIZATION = "0",
-    MOTION_DEBLUR = "1",
+export const enum MODE {
+    DEFAULT = "0",
+    WITH_GAN = "1",
 }
