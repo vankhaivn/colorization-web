@@ -1,7 +1,7 @@
 "use client"
 
 import { ChangeEvent, useState } from "react"
-import { Download, WandSparkles } from "lucide-react"
+import { Download, Loader2, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
 
 import { Image, ImageFallback, ImageWrapper, ModeSelector } from "@/components/common"
@@ -14,13 +14,25 @@ export default function Page() {
     const [state, setState] = useState<IMainPageState>({
         previewInputImage: "",
         previewOutputImage: "",
-        outputBlob: null,
         mode: "",
-        progress: 60,
+        progress: 1,
         file: null,
         loading: false,
+        outputFile: null,
+        outputBlob: null,
+        outputScore: 0,
     })
-    const { previewInputImage, previewOutputImage, outputBlob, mode, progress, file, loading } = state
+    const {
+        previewInputImage,
+        previewOutputImage,
+        outputBlob,
+        mode,
+        progress,
+        file,
+        outputFile,
+        loading,
+        outputScore,
+    } = state
 
     const handleOnChange = (field: string, value: string | number | File | boolean | Blob | null) => {
         setState((prevState) => ({
@@ -74,6 +86,7 @@ export default function Page() {
 
                 const outputBlob = new Blob([res.data], { type: "image/png" })
                 handleOnChange("outputBlob", outputBlob)
+                handleOnChange("outputFile", res.data)
                 handleOnChange("previewOutputImage", URL.createObjectURL(outputBlob))
                 toast.success("Task completed successfully!")
             }
@@ -101,9 +114,23 @@ export default function Page() {
         }
     }
 
+    const handleGetColorfulness = async (image: File) => {
+        try {
+            handleOnChange("loading", true)
+            const res = await apiHelper.getColorfulness(image)
+            handleOnChange("outputScore", Math.floor(res.data))
+        } catch (err) {
+            if (err instanceof Error) {
+                toast.error(err.message)
+            }
+        } finally {
+            handleOnChange("loading", false)
+        }
+    }
+
     return (
-        <div className="flex flex-row w-full h-[90vh] justify-between items-center py-8 relative">
-            <div className="w-[36%] shadow-lg">
+        <div className="flex flex-row w-full h-[90vh] justify-between items-start mt-12 py-8 relative">
+            <div className="w-[36%] shadow-lg relative">
                 <Label htmlFor="input-image">
                     <ImageWrapper className="w-full h-full max-h-[80vh]">
                         <Image src={previewInputImage} alt="@image" />
@@ -144,6 +171,22 @@ export default function Page() {
                 >
                     <Download />
                 </Button>
+                {outputFile && (
+                    <div>
+                        <Button
+                            className="absolute bottom-0 translate-y-[160%] left-[50%] translate-x-[-50%]"
+                            onClick={() => handleGetColorfulness(outputFile)}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 className="animate-spin" /> : "Get Colorfulness"}
+                        </Button>
+                        {outputScore !== 0 && (
+                            <div className="absolute bottom-0 translate-y-[320%] text-3xl font-bold left-[50%] translate-x-[-50%] text-green-500">
+                                {outputScore}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     )

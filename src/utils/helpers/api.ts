@@ -72,3 +72,22 @@ export const colorizeWithGan = async (file: File, onProgress: (value: number) =>
         throw err
     }
 }
+
+export const getColorfulness = async (file: File) => {
+    try {
+        const formData = new FormData()
+        formData.append("file", file)
+
+        const url = `${appConfigs.API_URL}/colorfulness`
+
+        const res = await axios.post(url, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+
+        return res.data
+    } catch (err) {
+        throw err
+    }
+}

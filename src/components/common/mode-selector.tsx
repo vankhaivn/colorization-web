@@ -27,7 +27,7 @@ export const ModeSelector = (props: IModeSelectorCompProps) => {
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Task</SelectLabel>
+                    <SelectLabel>Select model type</SelectLabel>
                     <SelectItem value={enums.MODE.DEFAULT}>Default</SelectItem>
                     <SelectItem value={enums.MODE.WITH_GAN}>With GAN</SelectItem>
                 </SelectGroup>
