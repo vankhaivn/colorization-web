@@ -44,7 +44,9 @@ export default function Page() {
     const handleSubmitImage = (e: ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files
         if (fileList && fileList[0]) {
-            previewInputImage && URL.revokeObjectURL(previewInputImage)
+            if (previewInputImage) {
+                URL.revokeObjectURL(previewInputImage)
+            }
             const blob = URL.createObjectURL(fileList[0])
             handleOnChange("previewInputImage", blob)
             handleOnChange("file", fileList[0])
@@ -82,8 +84,9 @@ export default function Page() {
             }
 
             if (res.data) {
-                previewOutputImage && URL.revokeObjectURL(previewOutputImage)
-
+                if (previewOutputImage) {
+                    URL.revokeObjectURL(previewOutputImage)
+                }
                 const outputBlob = new Blob([res.data], { type: "image/png" })
                 handleOnChange("outputBlob", outputBlob)
                 handleOnChange("outputFile", res.data)
