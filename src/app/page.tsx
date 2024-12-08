@@ -141,7 +141,10 @@ export default function Page() {
                             id="change-image"
                             type="file"
                             accept="image/*"
-                            onChange={handleSubmitImage}
+                            onChange={(e) => {
+                                handleSubmitImage(e)
+                                handleOnChange("previewOutputImage", "")
+                            }}
                             multiple={false}
                             className="w-0 h-0 hidden"
                         />
@@ -163,10 +166,20 @@ export default function Page() {
             </div>
             <div className="relative max-w-[70%] w-[50%] max-h-[72vh] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
                 {previewInputImage ? (
-                    <ReactCompareImage
-                        leftImage={previewInputImage}
-                        rightImage={previewOutputImage || previewInputImage}
-                    />
+                    <>
+                        <ReactCompareImage
+                            leftImage={previewInputImage}
+                            rightImage={previewOutputImage || previewInputImage}
+                        />
+                        <Button
+                            className="absolute left-[50%] translate-x-[-50%] -top-12"
+                            size={"icon"}
+                            variant={"outline"}
+                            onClick={handleDownload}
+                        >
+                            <Download />
+                        </Button>
+                    </>
                 ) : (
                     <div className="w-full shadow-lg relative">
                         <Label htmlFor="input-image">
