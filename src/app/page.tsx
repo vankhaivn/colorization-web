@@ -1,8 +1,9 @@
 "use client"
 
 import { ChangeEvent, useState } from "react"
-import { Download, Loader2, WandSparkles } from "lucide-react"
+import { Download, Loader2, RotateCwSquare, WandSparkles } from "lucide-react"
 import { toast } from "sonner"
+import ReactCompareImage from "react-compare-image"
 
 import { Image, ImageFallback, ImageWrapper, ModeSelector } from "@/components/common"
 import { Input, Label, Button, Progress } from "@/components/ui"
@@ -132,62 +133,58 @@ export default function Page() {
     }
 
     return (
-        <div className="flex flex-row w-full h-[90vh] justify-between items-start mt-12 py-8 relative">
-            <div className="w-[36%] shadow-lg relative">
-                <Label htmlFor="input-image">
-                    <ImageWrapper className="w-full h-full max-h-[80vh]">
-                        <Image src={previewInputImage} alt="@image" />
-                        <ImageFallback className="min-h-[62vh] font-semibold text-sm md:text-base lg:text-xl">
-                            Click to upload your image
-                        </ImageFallback>
-                    </ImageWrapper>
-                </Label>
-                <Input
-                    id="input-image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleSubmitImage}
-                    multiple={false}
-                    className="w-0 h-0 hidden"
-                />
-            </div>
-            <div className="relative w-[28%] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
+        <div className="flex flex-row w-full h-[90vh] justify-center items-center mt-2 py-8 relative">
+            <div className="w-[20%] shadow-lg relative bg-card">
+                {previewInputImage && (
+                    <>
+                        <Input
+                            id="change-image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSubmitImage}
+                            multiple={false}
+                            className="w-0 h-0 hidden"
+                        />
+                        <Label
+                            className="bg-zinc-700 cursor-pointer p-2 rounded-md absolute -top-[68%] flex justify-center items-center gap-x-2"
+                            htmlFor="change-image"
+                        >
+                            <RotateCwSquare />
+                            Change your image
+                        </Label>
+                    </>
+                )}
                 <ModeSelector className="mb-4" onChange={(value) => handleOnChange("mode", value)} />
                 <Button variant={"secondary"} className="w-full" onClick={handleColorize} disabled={loading}>
                     <WandSparkles />
                     Make Magic!
                 </Button>
-                {progress > 0 && <Progress value={progress} className="w-[82%] absolute -bottom-8" />}
+                {progress > 0 && <Progress value={progress} className="w-full absolute -bottom-8" />}
             </div>
-            <div className="w-[36%] shadow-lg relative">
-                <ImageWrapper className="w-full h-full max-h-[80vh]">
-                    <Image src={previewOutputImage} alt="@image" />
-                    <ImageFallback className="min-h-[62vh] font-semibold text-lg">
-                        Click to upload your image
-                    </ImageFallback>
-                </ImageWrapper>
-                <Button
-                    className="absolute left-[50%] translate-x-[-50%] -top-12"
-                    size={"icon"}
-                    variant={"outline"}
-                    onClick={handleDownload}
-                >
-                    <Download />
-                </Button>
-                {outputFile && (
-                    <div>
-                        <Button
-                            className="absolute bottom-0 translate-y-[160%] left-[50%] translate-x-[-50%]"
-                            onClick={() => handleGetColorfulness(outputFile)}
-                            disabled={loading}
-                        >
-                            {loading ? <Loader2 className="animate-spin" /> : "Get Colorfulness"}
-                        </Button>
-                        {outputScore !== 0 && (
-                            <div className="absolute bottom-0 translate-y-[320%] text-3xl font-bold left-[50%] translate-x-[-50%] text-green-500">
-                                {outputScore}
-                            </div>
-                        )}
+            <div className="relative max-w-[70%] w-[50%] max-h-[72vh] flex flex-col items-center gap-y-2 px-4 md:px-6 lg:px-8">
+                {previewInputImage ? (
+                    <ReactCompareImage
+                        leftImage={previewInputImage}
+                        rightImage={previewOutputImage || previewInputImage}
+                    />
+                ) : (
+                    <div className="w-full shadow-lg relative">
+                        <Label htmlFor="input-image">
+                            <ImageWrapper className="w-full h-full max-h-[80vh]">
+                                <Image src={previewInputImage} alt="@image" />
+                                <ImageFallback className="min-h-[62vh] font-semibold text-sm md:text-base lg:text-xl">
+                                    Click to upload your image
+                                </ImageFallback>
+                            </ImageWrapper>
+                        </Label>
+                        <Input
+                            id="input-image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSubmitImage}
+                            multiple={false}
+                            className="w-0 h-0 hidden"
+                        />
                     </div>
                 )}
             </div>
